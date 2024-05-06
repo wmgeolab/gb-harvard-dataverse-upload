@@ -1,13 +1,18 @@
 from prefect import flow
 import subprocess
 import requests
+import datetime
+from prefect import flow
 
-GbOpen = "/home/rohith/Desktop/DVHpc/geoBoundaries/database/geoBoundaries/releaseData/gbOpen/"
-DVuploader="/sciclone/geounder/dev/geoBoundaries/scripts/geoBoundaryBot/external/DataVerse/DVUploader-v1.1.0.jar"
-api_token = "2ed5ef8b-6f89-46bb-b140-a1c6914020ff"
-dataset_id = 7242413 #7152306 #35614814
+api_token = "bcbc1d25-9435-479a-834f-d32801147906"
+dataset_id = 3661110 #7242413
 
-@flow(flow_run_name="gbOpenDV",log_prints=True)
+def generate_flow_run_name():
+    date = datetime.datetime.now(datetime.timezone.utc)
+
+    return f"On-{date:%A}-{date:%B}-{date.day}-{date.year}"
+
+@flow(name='Harvard DV: DeleteFiles',flow_run_name=generate_flow_run_name,log_prints=True)
 def deleteFilesDV():
 
     # Define the API endpoint URL to retrieve the list of files
@@ -22,6 +27,7 @@ def deleteFilesDV():
     # Send a GET request to retrieve the list of files
     response = requests.get(files_url, headers=headers)
     files_data = response.json()
+    print(files_data)
 
     # Check if "files" key contains data
     if "files" in files_data["data"]["latestVersion"]:
